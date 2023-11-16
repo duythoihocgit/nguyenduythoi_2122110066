@@ -1,0 +1,410 @@
+var online = navigator.onLine;
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "))
+}
+
+function generateUniqueID() {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(e) {
+        var t = 16 * Math.random() | 0,
+            a = "x" == e ? t : 3 & t | 8;
+        return a.toString(16)
+    })
+}
+
+function detectClient(e) {
+    userIP = e.ip, refUrl = e.ref_url;
+    var t = "-",
+        r = "";
+    screen.width && (width = screen.width ? screen.width : "", height = screen.height ? screen.height : "", r += "" + width + " x " + height);
+    var i, o, n, s = navigator.appVersion,
+        a = navigator.userAgent,
+        d = navigator.appName,
+        c = "" + parseFloat(navigator.appVersion),
+        m = parseInt(navigator.appVersion, 10); - 1 != (o = a.indexOf("Opera")) && (d = "Opera", c = a.substring(o + 6), -1 != (o = a.indexOf("Version")) && (c = a.substring(o + 8))), -1 != (o = a.indexOf("OPR")) ? (d = "Opera", c = a.substring(o + 4)) : -1 != (o = a.indexOf("MSIE")) ? (d = "Microsoft Internet Explorer", c = a.substring(o + 5)) : -1 != (o = a.indexOf("Chrome")) ? (d = "Chrome", c = a.substring(o + 7)) : -1 != (o = a.indexOf("Safari")) ? (d = "Safari", c = a.substring(o + 7), -1 != (o = a.indexOf("Version")) && (c = a.substring(o + 8))) : -1 != (o = a.indexOf("Firefox")) ? (d = "Firefox", c = a.substring(o + 8)) : -1 != a.indexOf("Trident/") ? (d = "Microsoft Internet Explorer", c = a.substring(a.indexOf("rv:") + 3)) : (i = a.lastIndexOf(" ") + 1) < (o = a.lastIndexOf("/")) && (d = a.substring(i, o), c = a.substring(o + 1), d.toLowerCase() == d.toUpperCase() && (d = navigator.appName)), -1 != (n = c.indexOf(";")) && (c = c.substring(0, n)), -1 != (n = c.indexOf(" ")) && (c = c.substring(0, n)), -1 != (n = c.indexOf(")")) && (c = c.substring(0, n)), m = parseInt("" + c, 10), isNaN(m) && (c = "" + parseFloat(navigator.appVersion), m = parseInt(navigator.appVersion, 10));
+    var l = /Mobile|mini|Fennec|Android|iP(ad|od|hone)/.test(s),
+        u = navigator.cookieEnabled ? !0 : !1;
+    "undefined" != typeof navigator.cookieEnabled || u || (document.cookie = "testcookie", u = -1 != document.cookie.indexOf("testcookie") ? !0 : !1);
+    var h = t,
+        p = [{
+            s: "Windows 10",
+            r: /(Windows 10.0|Windows NT 10.0)/
+        }, {
+            s: "Windows 8.1",
+            r: /(Windows 8.1|Windows NT 6.3)/
+        }, {
+            s: "Windows 8",
+            r: /(Windows 8|Windows NT 6.2)/
+        }, {
+            s: "Windows 7",
+            r: /(Windows 7|Windows NT 6.1)/
+        }, {
+            s: "Windows Vista",
+            r: /Windows NT 6.0/
+        }, {
+            s: "Windows Server 2003",
+            r: /Windows NT 5.2/
+        }, {
+            s: "Windows XP",
+            r: /(Windows NT 5.1|Windows XP)/
+        }, {
+            s: "Windows 2000",
+            r: /(Windows NT 5.0|Windows 2000)/
+        }, {
+            s: "Windows ME",
+            r: /(Win 9x 4.90|Windows ME)/
+        }, {
+            s: "Windows 98",
+            r: /(Windows 98|Win98)/
+        }, {
+            s: "Windows 95",
+            r: /(Windows 95|Win95|Windows_95)/
+        }, {
+            s: "Windows NT 4.0",
+            r: /(Windows NT 4.0|WinNT4.0|WinNT|Windows NT)/
+        }, {
+            s: "Windows CE",
+            r: /Windows CE/
+        }, {
+            s: "Windows 3.11",
+            r: /Win16/
+        }, {
+            s: "Android",
+            r: /Android/
+        }, {
+            s: "Open BSD",
+            r: /OpenBSD/
+        }, {
+            s: "Sun OS",
+            r: /SunOS/
+        }, {
+            s: "Linux",
+            r: /(Linux|X11)/
+        }, {
+            s: "iOS",
+            r: /(iPhone|iPad|iPod)/
+        }, {
+            s: "Mac OS X",
+            r: /Mac OS X/
+        }, {
+            s: "Mac OS",
+            r: /(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/
+        }, {
+            s: "QNX",
+            r: /QNX/
+        }, {
+            s: "UNIX",
+            r: /UNIX/
+        }, {
+            s: "BeOS",
+            r: /BeOS/
+        }, {
+            s: "OS/2",
+            r: /OS\/2/
+        }, {
+            s: "Search Bot",
+            r: /(nuhk|Googlebot|Yammybot|Openbot|Slurp|MSNBot|Ask Jeeves\/Teoma|ia_archiver)/
+        }];
+    for (var _ in p) {
+        var g = p[_];
+        if (g.r.test(a)) {
+            h = g.s;
+            break
+        }
+    }
+    var f = t;
+    switch (/Windows/.test(h) && (f = /Windows (.*)/.exec(h)[1], h = "Windows"), h) {
+        case "Mac OS X":
+            f = /Mac OS X (10[\.\_\d]+)/.exec(a)[1];
+            break;
+        case "Android":
+            f = /Android ([\.\_\d]+)/.exec(a)[1];
+            break;
+        case "iOS":
+            f = /OS (\d+)_(\d+)_?(\d+)?/.exec(s), f = f[1] + "." + f[2] + "." + (0 | f[3])
+    }
+    var w = "no check";
+    if ("undefined" != typeof swfobject) {
+        var S = swfobject.getFlashPlayerVersion();
+        w = S.major > 0 ? S.major + "." + S.minor + " r" + S.release : t
+    }
+    window.jscd = {
+        screen: r,
+        browser: d,
+        browserVersion: c,
+        browserMajorVersion: m,
+        mobile: l,
+        os: h,
+        osVersion: f,
+        cookies: u,
+        flashVersion: w
+    }, load_widget()
+}
+
+function load_widget() {
+    if (localStorage.getItem("michat_support-cookie_widget") == null) {
+        localStorage.setItem("michat_support-cookie_widget", generateUniqueID())
+    }
+
+    function setIframeSrc() {
+        var scripts = document.getElementById("michat_support");
+        var src = scripts.src;
+        document.body.appendChild(scripts);
+        var http = new XMLHttpRequest();
+        var url = "https://" + src.split('/')[2] + "/chat/getWidget";
+        var params = "getWidget=getWidget&widgetHash=" + scriptElement.getAttribute('widgetHash') + "&ip=" + userIP;
+        http.open("POST", url, !0);
+        http.timeout = 2000;
+        http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        http.onreadystatechange = function() {
+            if (http.readyState == 4 && http.status == 200) {
+                // console.log(window.location.href);
+                if(!document.getElementById("michat_iframe")){
+                    var o = document.createElement("iframe");
+                    if (http.responseText == 'NO_GROUP') {
+                        o.src = ''
+                    } else {
+                        var e, t = {
+                                group: (http.responseText).split('_')[0],
+                                title_web: window.parent.document.title,
+                                link_portal: widgetDir,
+                                host_name: window.location.hostname,
+                                current_url: window.location.href,
+                                ref_url: document.referrer,
+                                os: jscd.os + " " + jscd.osVersion,
+                                browser: jscd.browser + " " + jscd.browserMajorVersion + " (" + jscd.browserVersion + ")",
+                                mobile: jscd.mobile,
+                                screen_size: jscd.screen,
+                                ip_address: userIP,
+                                cookies: jscd.cookies,
+                                cookie_widget: localStorage.getItem("michat_support-cookie_widget"),
+                                lang: window.navigator.language,
+                                hash: (http.responseText).split('_')[1]
+                            },
+                            r = "0",
+                            i = "0";
+                        left = "0";
+
+                        var link_php = "/midesk.php?d=";
+                        if(t.group == 88){
+                            link_php = "/midesk_vinbus.php?d=";
+                        }
+                        if(t.group == 103){
+                            link_php = "/midesk_minhtuan.php?d=";
+                        }
+                        if(t.group == 295){
+                            link_php = "/midesk_isb.php?d=";
+                        }
+                        void 0 != document.getElementById("michat_support") && null != document.getElementById("michat_support").getAttribute("data-force-preset") && (e = document.getElementById("michat_support").getAttribute("data-force-preset")), void 0 != document.getElementById("michat_support_options") && null != document.getElementById("michat_support_options").getAttribute("data-force-preset") && (e = document.getElementById("michat_support_options").getAttribute("data-force-preset")), void 0 != document.getElementById("michat_support_options") && null != document.getElementById("michat_support_options").getAttribute("data-margin-bottom") && (r = document.getElementById("michat_support_options").getAttribute("data-margin-bottom")), void 0 != document.getElementById("michat_support_options") && null != document.getElementById("michat_support_options").getAttribute("data-margin-right") && (left = document.getElementById("michat_support_options").getAttribute("data-margin-right")) && (i = document.getElementById("michat_support_options").getAttribute("data-margin-right")), t.origin = origin, t.selected_preset = e;
+                        o.setAttribute('rel', '37'), o.id = "michat_iframe", o.style.position = "fixed", o.style.bottom = r, o.style.left, o.style.right = i, o.style.width = "80px", o.style.height = "70px", o.style.border = "0", o.style.zIndex = "16000001";
+                        o.style.padding = "0px";
+                        var n = Base64.encode(JSON.stringify(t));
+                        o.src = widgetDir + link_php + encodeURIComponent(n), scriptElement.parentNode.insertBefore(o, scriptElement.nextSibling), window.addEventListener && window.addEventListener("message", function(e) {
+                            if (e.origin === rootPath) {
+                                var h = window.innerHeight;
+                                var t = e.data.task;
+
+                                function checkSize() {
+                                    if (window.innerHeight < 1024) {
+                                        // console.log(t);
+                                        switch (t) {
+                                            case "iframe_init_default":
+                                                document.getElementById("michat_iframe").style.width = "80px", document.getElementById("michat_iframe").style.height = "70px";
+                                                break;
+                                            case "iframe_init_slideup":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "50px";
+                                                break;
+                                            case "iframe_init_slideside":
+                                                document.getElementById("michat_iframe").style.width = "60px", document.getElementById("michat_iframe").style.height = "610px";
+                                                break;
+                                            case "iframe_resize":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "610px";
+                                                if((http.responseText).split('_')[0] == 286){
+                                                    $('#michat_iframe').css('min-height', '610px');
+                                                }
+                                                break;
+                                            case "iframe_resize_slideside":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "610px";
+                                                break;
+                                            case "iframe_wideMode":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "610px";
+                                                break;
+                                            case "iOS_focus":
+                                                document.body.style.position = "fixed";
+                                                break;
+                                            case "iOS_blur":
+                                                document.body.style.position = ""
+                                        }
+                                    };
+                                    if (window.innerHeight < 600) {
+                                        switch (t) {
+                                            case "iframe_init_default":
+                                                document.getElementById("michat_iframe").style.width = "80px", document.getElementById("michat_iframe").style.height = "70px";
+                                                break;
+                                            case "iframe_init_slideup":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "50px";
+                                                break;
+                                            case "iframe_init_slideside":
+                                                document.getElementById("michat_iframe").style.width = "60px", document.getElementById("michat_iframe").style.height = "810px";
+                                                break;
+                                            case "iframe_resize":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "580px";
+                                                break;
+                                            case "iframe_resize_slideside":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "580px";
+                                                break;
+                                            case "iframe_wideMode":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "580px";
+                                                break;
+                                            case "iOS_focus":
+                                                document.body.style.position = "fixed";
+                                                break;
+                                            case "iOS_blur":
+                                                document.body.style.position = ""
+                                        }
+                                    };
+                                    if (window.innerHeight < 500) {
+                                        switch (t) {
+                                            case "iframe_init_default":
+                                                document.getElementById("michat_iframe").style.width = "80px", document.getElementById("michat_iframe").style.height = "70px";
+                                                break;
+                                            case "iframe_init_slideup":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "50px";
+                                                break;
+                                            case "iframe_init_slideside":
+                                                document.getElementById("michat_iframe").style.width = "60px", document.getElementById("michat_iframe").style.height = "810px";
+                                                break;
+                                            case "iframe_resize":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "476px";
+                                                break;
+                                            case "iframe_resize_slideside":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "476px";
+                                                break;
+                                            case "iframe_wideMode":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "476px";
+                                                break;
+                                            case "iOS_focus":
+                                                document.body.style.position = "fixed";
+                                                break;
+                                            case "iOS_blur":
+                                                document.body.style.position = ""
+                                        }
+                                    };
+                                    if (window.innerHeight < 408) {
+                                        switch (t) {
+                                            case "iframe_init_default":
+                                                document.getElementById("michat_iframe").style.width = "80px", document.getElementById("michat_iframe").style.height = "70px";
+                                                break;
+                                            case "iframe_init_slideup":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "50px";
+                                                break;
+                                            case "iframe_init_slideside":
+                                                document.getElementById("michat_iframe").style.width = "60px", document.getElementById("michat_iframe").style.height = "810px";
+                                                break;
+                                            case "iframe_resize":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "380px";
+                                                break;
+                                            case "iframe_resize_slideside":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "380px";
+                                                break;
+                                            case "iframe_wideMode":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "380px";
+                                                break;
+                                            case "iOS_focus":
+                                                document.body.style.position = "fixed";
+                                                break;
+                                            case "iOS_blur":
+                                                document.body.style.position = ""
+                                        }
+                                    };
+                                    if (window.innerHeight < 320) {
+                                        switch (t) {
+                                            case "iframe_init_default":
+                                                document.getElementById("michat_iframe").style.width = "80px", document.getElementById("michat_iframe").style.height = "70px";
+                                                break;
+                                            case "iframe_init_slideup":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "50px";
+                                                break;
+                                            case "iframe_init_slideside":
+                                                document.getElementById("michat_iframe").style.width = "60px", document.getElementById("michat_iframe").style.height = "810px";
+                                                break;
+                                            case "iframe_resize":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "320px";
+                                                break;
+                                            case "iframe_resize_slideside":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "320px";
+                                                break;
+                                            case "iframe_wideMode":
+                                                document.getElementById("michat_iframe").style.width = "380px", document.getElementById("michat_iframe").style.height = "320px";
+                                                break;
+                                            case "iOS_focus":
+                                                document.body.style.position = "fixed";
+                                                break;
+                                            case "iOS_blur":
+                                                document.body.style.position = ""
+                                        }
+                                    }
+                                }
+                                window.onresize = function(event) {
+                                    checkSize()
+                                };
+                                window.onresize()
+                            }
+                        }, !1)
+                    }
+                }
+
+                
+            }
+        }
+        http.send(params)
+    }
+    if (online == !0) {
+        setIframeSrc();
+        // setTimeout(setIframeSrc, 2000)
+    }
+}
+var scriptElement = document.querySelector("#michat_support"),
+    gr_siridesk = scriptElement.getAttribute('widgetKey'),
+    scriptSRC = scriptElement.src,
+    widgetDir = scriptSRC.replace("/" + scriptSRC.split("/").pop(), ""),
+    rootArray = scriptSRC.split("/"),
+    rootPath = rootArray[0] + "//" + rootArray[2],
+    origin = '';
+if (location.port != null) {
+    origin = location.protocol + "//" + window.location.hostname + ':' + location.port
+} else {
+    origin = location.protocol + "//" + window.location.hostname
+}(void 0 == origin || null == origin || "" == origin) && (origin = location.protocol + "//" + document.domain);
+var script = document.createElement("script");
+script.src = widgetDir + "/jsonp.php", document.body.appendChild(script);
+var Base64 = {
+    _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+    encode: function(e) {
+        var t, r, i, o, n, s, a, d = "",
+            c = 0;
+        for (e = Base64._utf8_encode(e); c < e.length;) t = e.charCodeAt(c++), r = e.charCodeAt(c++), i = e.charCodeAt(c++), o = t >> 2, n = (3 & t) << 4 | r >> 4, s = (15 & r) << 2 | i >> 6, a = 63 & i, isNaN(r) ? s = a = 64 : isNaN(i) && (a = 64), d = d + this._keyStr.charAt(o) + this._keyStr.charAt(n) + this._keyStr.charAt(s) + this._keyStr.charAt(a);
+        return d
+    },
+    decode: function(e) {
+        var t, r, i, o, n, s, a, d = "",
+            c = 0;
+        for (e = e.replace(/[^A-Za-z0-9\+\/\=]/g, ""); c < e.length;) o = this._keyStr.indexOf(e.charAt(c++)), n = this._keyStr.indexOf(e.charAt(c++)), s = this._keyStr.indexOf(e.charAt(c++)), a = this._keyStr.indexOf(e.charAt(c++)), t = o << 2 | n >> 4, r = (15 & n) << 4 | s >> 2, i = (3 & s) << 6 | a, d += String.fromCharCode(t), 64 != s && (d += String.fromCharCode(r)), 64 != a && (d += String.fromCharCode(i));
+        return d = Base64._utf8_decode(d)
+    },
+    _utf8_encode: function(e) {
+        e = e.replace(/\r\n/g, "\n");
+        for (var t = "", r = 0; r < e.length; r++) {
+            var i = e.charCodeAt(r);
+            128 > i ? t += String.fromCharCode(i) : i > 127 && 2048 > i ? (t += String.fromCharCode(i >> 6 | 192), t += String.fromCharCode(63 & i | 128)) : (t += String.fromCharCode(i >> 12 | 224), t += String.fromCharCode(i >> 6 & 63 | 128), t += String.fromCharCode(63 & i | 128))
+        }
+        return t
+    },
+    _utf8_decode: function(e) {
+        for (var t, r, i, o = "", n = 0, s = t = r = 0; n < e.length;) s = e.charCodeAt(n), 128 > s ? (o += String.fromCharCode(s), n++) : s > 191 && 224 > s ? (r = e.charCodeAt(n + 1), o += String.fromCharCode((31 & s) << 6 | 63 & r), n += 2) : (r = e.charCodeAt(n + 1), i = e.charCodeAt(n + 2), o += String.fromCharCode((15 & s) << 12 | (63 & r) << 6 | 63 & i), n += 3);
+        return o
+    }
+}

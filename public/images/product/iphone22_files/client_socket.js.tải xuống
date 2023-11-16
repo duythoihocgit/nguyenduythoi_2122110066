@@ -1,0 +1,42 @@
+$(document).ready(function() {
+    function checkSocketTimeOut(socket, times) {
+        if (socket.connected) {
+            console.log('connect');
+        } else if (!socket.connected && times <= 10) {
+            times++;
+            timeReconnect = times <= 2 ? 300 : 10000;
+            setTimeout(function() {
+                checkSocketTimeOut(socket, times);
+            }, timeReconnect);
+        } else if (!socket.connected && times > 10) {
+            socket.close();
+            console.log("Close connect " + times + ": " + socket.connected);
+        }
+    }
+    
+    socket.on('connect', function() {
+        socket.emit('room', {'room' : mi_group });
+        // console.log('CLIENT CONNECT room: '+mi_group);
+    });
+    
+    // socket.on('NOTI_ONLINE_VISITORS_TO_AGENT', function(response) {
+    //     var html_online_visitors = '';
+    //     $.each(response, function(index, item) {
+    //         html_online_visitors = html_online_visitors + '<tr id="' + item.user_id + '">\
+    //             <td class="text-left session_id" align="left" width="" style="display: none;">' + item.session_id + '</td>\
+    //             <td class="text-left visitor_name" align="left" width="" style="width:114px">' + item.name + ' [#' + item.user_id + ']</td>\
+    //             <td class="text-left city_name" align="left" width="">' + item.country_name + '</td>\
+    //             <td class="text-left time_spend" align="left" width=""></td>\
+    //             <td class="text-left current_url" align="left" width="" style="width:136px">' + item.link_portal + '</td>\
+    //         </tr>';
+    //     });
+    //     $('#chat-online-visitors').html(html_online_visitors);
+    // });
+    // socket.on('NOTI_USER_OFFLINE', function(data) {});
+    socket.on('disconnect', function() {
+        console.clear();
+        timesReconnect = 1;
+        checkSocketTimeOut(socket, timesReconnect);
+        console.log('Disconnect from Server ....');
+    });
+});

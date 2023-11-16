@@ -1,0 +1,385 @@
+// JavaScript Document
+var limit_scroll_active = 0.72;//82% height
+//---------
+var scrollLoad = true;
+var $page = '1';
+var check_height = scroll_active = 0;
+/***********************/
+function profilter_getselected_title()
+{
+  var html = '';
+  $('#filterbox_container_collapse button.rightbox__itemval.selected').each( function( index, element ){
+      var item_label = $(this).text().trim();
+      var item_sublabel = $(this).data('title');
+      item_sublabel = typeof item_sublabel != 'undefined' && item_sublabel ? item_sublabel.trim() + ': ' : '';
+      var item_value = $(this).attr( 'value');
+      var item_name = $(this).attr( 'name');
+      html += '<span class="col-auto"><button type="button" class="rightbox__itemval reslabel__filteritem" value="'+item_value+'" name="'+item_name+'">'+item_sublabel+item_label+'</button></span>'
+  });
+  //-------
+  if( html )
+  {
+    var _url_clear = $('#filterbox_container_collapse .filterbox_container_collapse__response').data('clear');
+    if( typeof _url_clear != 'undefined' && _url_clear )
+    {
+      html += '<span class="col-auto"><a class="rightbox__itemval reslabel__filteritem" href="'+_url_clear+'">Bỏ chọn tất cả</a></span>';
+    }
+
+    $('#filterbox_container_collapse .filterbox_container_collapse__response').html( '<p class="filterbox_label f-title text-upp bold mb-1">Đang tìm kiếm</p><div class="row">' + html + '</div>' ).show();
+  }else{
+    $('#filterbox_container_collapse .filterbox_container_collapse__response').html( '' ).hide();
+  }
+  //console.log( html );
+}
+function profilter_process( _process, _page )
+{
+  var _getdata = getdata = {};
+  var _getdata_uri = {};
+  var _getdata_str = '';
+  var _tmp_val = [];
+  //-------------
+	$('.filterbox_container button.rightbox__itemval.selected, .filterbox_container input.rightbox__itemval[type=hidden]').each( function( index, element){
+
+      var $this = $(this);
+      //---------
+      var _val = $this.val();
+      var _label = $this.attr( 'name');
+      //_tmp_val[_label ][ _val ] = _val;
+      //----------
+      switch( _label )
+      {
+        case 'price':
+          _getdata['price' ] = _val;
+          break;
+        default:
+          if( _getdata[ _label ] === undefined )
+          {
+              _getdata[ _label ] = [];
+          }
+          _getdata[ _label ][ _val ] = _val ;
+          break;
+      }
+  });
+  $('.profilter_brand__container button.profilter_brand__item.selected').each( function( index, element){
+
+    var $this = $(this);
+    //---------
+    var _val = $this.val();
+    var _label = $this.attr( 'name');
+    //_tmp_val[_label ][ _val ] = _val;
+    //----------
+    switch( _label )
+    {
+      case 'brand':
+        if( _getdata[ _label ] === undefined )
+        {
+            _getdata[ _label ] = [];
+        }
+        _getdata[ _label ][ _val ] = _val ;
+        break;
+    }
+});
+  //console.log( _getdata['price']);
+  var _x_group = 1;
+  for ( var item in _getdata   ) {
+      _getdata_str += _x_group > 1 ? '&' : '';
+      var _x_item = 1;
+      if( item != 'price' )
+      {
+          //no price
+          var __text_tmp = '';
+          for( var itemval in _getdata[ item ] )
+          {
+              __text_tmp += _x_item > 1 ? '|' : '';
+              __text_tmp += itemval;
+              _x_item++;
+          }
+          _getdata_str += item + '=' + __text_tmp;
+          _getdata_uri[item] =  __text_tmp ;
+          //console.log( __text_tmp );
+          getdata [ item ] =  __text_tmp;
+          //--------------------
+      }else{
+          //price
+        _getdata_str += item + '=' + _getdata[ item ];
+        //console.log( _getdata[ item ] );
+        _getdata_uri[item] =  _getdata[ item ];
+        getdata [ item ] =  _getdata[ item ];
+      }
+      _x_group++;
+  };
+  console.log( _getdata_uri );
+  //---------
+  _getdata[ 'groupfocus' ]  = $('.filterbox_container input[name=groupfocus]').eq(0).val();
+  _getdata[ 'navfocus' ]    = $('.filterbox_container input[name=navfocus]').eq(0).val();
+  _getdata[ 'ctlfocus' ]    = $('.filterbox_container input[name=ctlfocus]').eq(0).val();
+  _getdata[ 'typefocus' ]    = $('.filterbox_container input[name=typefocus]').eq(0).val();
+  
+  if( $('.filterbox_container input[name=k]').eq(0).val() )
+  {
+      _getdata_str += '&k=' + $('.filterbox_container input[name=k]').eq(0).val();
+      //_getdata_uri['k'] = $('.filterbox_container input[name=k]').eq(0).val();
+  }
+  _getdata[ 'proold' ]    = $('.filterbox_container input[name=proold]').eq(0).val();
+  _getdata[ 'k' ]    = $('.filterbox_container input[name=k]').eq(0).val();
+  _getdata[ 'current_url' ] = current_url;
+  //process - ajax
+  //_getdata_uri = _getdata_str;
+  switch( _process )
+  {
+      case 'loadmore':
+        _getdata[ 'page' ] = _page ? _page : 1;
+        return _getdata;
+        break;
+      case 'loadmore-url':
+        return _getdata_str;
+        break;
+        default:
+        if(  _process == '_uri')
+        {
+            //console.log( _getdata_uri);
+            return _getdata_uri;
+        }else{
+            check_show_btnremove();
+            updateURL( _getdata_str );
+            ajax_getproduct( getdata, _getdata_str );
+            //--------------
+        }
+        break;
+        
+    }
+  //=====================
+  //update url filer sortby
+  $('#filterbox_container_collapse .rightbox__filteritem__order .dropdown-menu a.dropdown-item').each( function( element ){
+      //  console.log( current_url +'?'+ _getdata_str );
+      var _sort_url = current_url +'?'+ (  _getdata_str ?  _getdata_str + '&' : '' ) + $( this).data( 'sort');
+      //console.log( _sort_url );
+      $( this).attr( 'href', _sort_url );
+  });
+}
+function ajax_getproduct( $_data, _url_str )
+{
+		var _container = $( '#getproduct_reponse').eq(0);
+    scrollLoad = false;
+		if( _container.length == 1  )
+		{
+			jQuery('body,html').stop(false, false).animate({
+				scrollTop: $('#getproduct_reponse').position().top - 200,
+			}, 800);
+			//---------------
+      //console.log( $_data );
+			$.post( site_url + 'ajax/get-product', $_data, function( _res){
+            //console.log( _res );
+            var total = $( _res).data( 'total');
+            if( ( total ) )
+            {
+              //$('.product__total b').html( total);
+            }
+						_container.html( _res);
+            scrollLoad = true;
+            profilter_getselected_title();
+			});
+		}else{
+			window.location.href = current_url + '?' + _url_str;
+		}
+}
+//-----------------------
+function loadmore( $action)
+{
+    var box_loadmore = $( '.loadmore');
+    switch( $action )
+    {
+        case 'show':
+          box_loadmore.fadeIn('slow');
+          break;
+        default:
+          //console.log( 'loadmore  - hide');
+          box_loadmore.hide();
+          break;
+    }
+}
+function geturi_paramater()
+{
+  const queryString = window.location.search;
+  return queryString;
+}
+$(document).ready(function(e) {
+
+  $('.filterbox_group').on( 'click', 'a.rightbox__itemval', function( event){
+      var _getdata_str = '';
+      var _x_group = 1;
+      var focus = $(this).data( 'value');
+      var url = $(this).attr( 'href');
+      var _uri = profilter_process( '_uri' );
+      //----------
+      //alert( 1);
+      /**/
+      for ( var item in _uri   )
+      {
+          if( item != focus )
+          {
+            _getdata_str += _x_group > 1 ? '&' : '';
+            _getdata_str += item + '=' + _uri[ item ];
+          }
+      }
+      var url_redirect = url + ( _getdata_str ? '?' + _getdata_str : '' );
+      //console.log( focus, _uri, url_redirect );
+      window.location.href = url_redirect;
+      return false;
+  });
+
+  $('.filterbox_group').on( 'click', 'button.rightbox__itemval', function( event){
+      var $this = $(this);
+      //alert( 1);
+      if( $this.attr( 'name') == 'price' )
+      {
+        $( '.filterbox_group .rightbox__itemval[name=price]').removeClass( 'selected');
+      }
+      if( $this.attr( 'name') == 'ttm' )
+      {
+        $( '.filterbox_group .rightbox__itemval[name=ttm]').removeClass( 'selected');
+      }
+      //--------------
+      if( $this.hasClass( 'selected') )
+      {
+        $this.removeClass( 'selected');
+      }else{
+        $this.addClass( 'selected');
+      }
+      //profilter_process( $this );
+      //$this.parents('.dropdown-menu').removeClass( 'show');
+      //$this.parents('.dropdown').find('.filterbox_dropdown_label').removeClass( 'show');
+      //return false;
+      $page = 1;
+
+  });
+  //============
+  $('.filterbox_group').on( 'click', 'button.rightbox__filteritem_runfilter', function( event){
+    var $this = $(this);
+    profilter_process( '');
+    $this.parents('.dropdown-menu').removeClass( 'show');
+    $this.parents('.dropdown').find('.filterbox_dropdown_label').removeClass( 'show');
+
+  });
+  $('#collapse_filterbox_group_container').on('click', '.rightbox__filteritem_runfilter--widget', function(event){
+    var $this = $(this);
+    profilter_process( '');
+    //==================================
+    //$('body').removeClass( 'evt--filterbox-active');
+    new bootstrap.Collapse('#collapse_filterbox_group_container').hide();
+    //==================================
+  });
+  //==================================
+  $('.profilter_brand__container').on( 'click', '.profilter_brand__item', function(){
+    var $this = $(this);
+    if( $this.hasClass( 'selected') )
+    {
+      $this.removeClass( 'selected');
+    }else{
+      $this.addClass( 'selected');
+    }
+    profilter_process( '');
+
+  })
+  //-------
+  $('.filterbox_container_collapse__response').on( 'click', '.reslabel__filteritem', function( event ){
+    event.stopPropagation();
+    $(this).parent( 'span').remove();
+    var value = $(this).attr( 'value').trim();
+    var name = $(this).attr( 'name').trim();
+    //console.log( $('.filterbox_group button.rightbox__itemval[value='+value+']') );
+    if( value )
+    {
+      //$('.filterbox_group button.rightbox__itemval[value='+value+']').removeClass( 'selected');
+      $('.filterbox_group button.rightbox__itemval[name='+name+'].selected').removeClass( 'selected');
+      profilter_process( '' );
+      //$('.filterbox_group .rightbox__itemval[value='+value+']').trigger( 'click', true);
+    }
+
+  });
+  //==================================
+
+});
+//*****************************
+function get_postop_product_reponse()
+{
+  return $( '#getproduct_reponse').position().top + $( '#getproduct_reponse').height();
+}
+function check_loadmore( scroll_active )
+{
+  var _scrolltop = $(window).scrollTop();
+  var postop_reponse = get_postop_product_reponse();
+  return _scrolltop >= ( postop_reponse * limit_scroll_active ) && scroll_active < _scrolltop ? true : false;
+}
+//*****************************
+$(window).scroll(function(){
+  var _scrolltop = $(window).scrollTop();
+
+  if( $('.product__container').length > 0 )
+  {
+    check_height = $('.product__container').last().position().top + $('.product__container').last().height();
+    //console.log( check_height );
+  }
+  //console.log( scroll_active , _scrolltop );
+  /*
+  $('#getproduct_reponse').infiniteScroll({
+    path: function(){
+        var _url_str = profilter_process( 'loadmore-url', ++$page  );
+        var url_loadmore = current_url +'?'+ _url_str;
+        const uri_pramater = geturi_paramater();
+        console.log( url_loadmore );
+        return url_loadmore;
+   
+    },
+    fetchOptions: {
+      mode: 'cors',
+      cache: 'no-cache',
+      credentials: 'same-origin',
+      headers: {
+        'X-Session-Id': 'minhtuanmobile.com',
+        'X-Action': 'loadmore',
+      },
+    },
+    append: '.product__container',
+    //status: '.scroller-status',
+    history: false,
+    //scrollThreshold: 100
+    checkLastPage: true,
+    //loadOnScroll: true,
+    debug: true,
+  });
+  */
+    //-----
+    //-----
+    /*  */
+  if ( check_loadmore( scroll_active ) && scrollLoad  ){
+      //
+      console.log( 'process - loadmore');
+
+      scroll_active = _scrolltop;
+      scrollLoad = false;
+      loadmore( 'show');
+      var $datapost = profilter_process( 'loadmore', ++$page  );
+      const uri_pramater = geturi_paramater();
+      //console.log( $datapost, geturi_paramater() );
+       $.post( site_url + 'loadmore-product' + uri_pramater , $datapost, function( $resdata ){
+           //console.log( 'aa' );
+           loadmore( 'hide');
+           $res = $.parseJSON( $resdata )
+
+           if( $res.status == 'true')
+           {
+               $( '#getproduct_reponse .product__container').append( $res.html);
+               scrollLoad = true;
+           }
+
+      });
+      //console.log( scrollLoad + ' - scroll - page = ' + $page );
+  }else{
+      loadmore( 'hide');
+      scroll_active = 0;
+      //scrollLoad = true;
+
+  }
+
+});
